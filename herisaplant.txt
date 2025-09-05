@@ -1,0 +1,48 @@
+let delaySlider = slider(0.2,0.2,1.8,0.1)
+let switcher = slider(0.2,0.2,3.0)
+let bobVol = slider(0,0,1.0,0.1)
+let mainbob = slider(0,0,1.0,0.1)
+let SA_slider_drums = slider(0,0,1.0,0.1)
+samples({ bob: 'bob.ogg' }, 'github:shed/strudel')
+
+let stack1 = stack(
+  n("0 [2 4] <3 5> [~ <4 !1>]".add("<0 [0,2,4]>"))
+    .scale("C5:minor").release(.9)
+    .sound("gm_xylophone").lpf(slider(1758.414,1,3000)).sometimes(x=>x.rev()).gain(choose(1,0))._pitchwheel(),
+  n("0 [2 4] <3 5> [~ <4 !1>]".add("<0 [0,2,4]>"))
+    .scale("C5:minor").release(.9)
+    .sound("gm_xylophone").lpf(slider(1752.416,1,3000)).sometimes(x=>x.rev()).gain(choose(1,0)),
+  n("0 1 [4 3] 2 0 2 [~ 3] 4").sound("jazz").pan(1).lpf(slider(843.719,1,3000)).sometimes(x=>x.rev()).gain(choose(1,0)).color("red"),
+  n("0 1 [4 3] 2 0 2 [~ 3] 4").sound("jazz").pan(1).rev().lpf(slider(1698.434,1,3000)).sometimes(x=>x.rev()).gain(choose(1,0)).color("red"),
+  s("<bd ~ bd ~ ~>").bank("tr909").gain(0.3).sometimes(x=>x.rev()),
+  
+  s("bob").slice(3,"<2 1 - - 2 3 6 - 3 1 - - 4 - 5>").slow(2).room(1).decay(0.6).pan(choose(0, 1)).gain(bobVol),
+  s("<~ ~ ~ ~ bob>").begin(0.8).slow(2).room(0.8).gain(bobVol),
+  s("bob").slow(12).room(0.1).gain(mainbob),
+
+  sound("bd <bd bd> <bd hh>").gain(0.4).slow(3).jux(rev),
+
+s("<hh*2 hh*4 hh*4 hh:2 hh*4>").bank("tr909").speed(sine.slow(5).range(0.8, 1.2)).room(0.7).degradeBy(0.2).crush(sine.slow(2).range(1, 10))
+.gain(0.2),
+
+s("bd ~ [~ bd] ~").gain(SA_slider_drums).lpf(200).room(0.7).rev()
+   .off(1/8, x=>x.gain(0.2).speed(1.95))._punchcard(),
+
+s("~ [~ hh] ~ hh").gain(SA_slider_drums).hpf(1000).pan(sine.slow(4))
+   .delay(-0.125).delayfb(0.3).delaytime(0.25),
+
+s("~ ~ rim ~").gain(SA_slider_drums).room(0.4).speed(rand.range(0.9, 1.1)),
+
+
+  
+).delay(delaySlider).room(delaySlider)
+
+let stack2 = stack(
+  n("0 [2 4] <3 5> [~ <4 !1>]".add("<0 [0,2,4]>"))
+    .scale("C5:minor").release(.9)
+    .sound("gm_xylophone").jux(rev).lpf(slider(1155.615,1,3000)).sometimes(x=>x.rev()).gain(choose(1,0)),
+  s("bob").begin(0.2).slow(2).room(0.8).delay(0.3, 0.7).release(.9).decay(slider(3.4,0,10,0.1)).gain(0.5)
+  
+)
+
+stack1
